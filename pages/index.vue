@@ -1,11 +1,29 @@
 <template>
   <div>
-    <h1 class="title">
-      Hello world
-    </h1>
+    <card v-for="(post, index) in posts" :key="index" :post="post" />
   </div>
 </template>
 
 <script>
-export default {};
+import Card from "@/components/Card.vue";
+import sdkClient from "@/plugins/contentful.js";
+
+export default {
+  components: {
+    Card,
+  },
+  async asyncData({ env }) {
+    let posts = [];
+    await sdkClient
+      .getEntries({
+        content_type: "blogPost",
+        order: "-fields.publishedAt",
+      })
+      .then((res) => {
+        posts = res.items;
+      })
+      .catch(console.error);
+    return { posts };
+  },
+};
 </script>
