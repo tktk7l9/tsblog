@@ -1,4 +1,6 @@
 require("dotenv").config();
+const sdkClient = require("./plugins/contentful").default;
+
 export default {
   /*
    ** Nuxt rendering mode
@@ -74,5 +76,20 @@ export default {
   },
   router: {
     middleware: ["getPosts"],
+  },
+  generate: {
+    routes() {
+      return Promise.all([
+        sdkClient.getEntries({
+          content_type: "blogPost",
+        }),
+      ]).then(([posts]) => {
+        return [
+          ...posts.items.map((post) => {
+            return { route: `posts/${post.fields.slug}`, payload: post };
+          }),
+        ];
+      });
+    },
   },
 };

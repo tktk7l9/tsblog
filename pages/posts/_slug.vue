@@ -21,11 +21,21 @@ import { mapState } from "vuex";
 export default {
   computed: {
     ...mapState(["posts"]),
-    post() {
-      return this.posts.find(
-        (post) => post.fields.slug === this.$route.params.slug
-      );
-    },
+  },
+  async asyncData({ payload, store, params, error }) {
+    const post =
+      payload ||
+      (await store.state.posts.find(
+        (post) => post.fields.slug === params.slug
+      ));
+    if (post) {
+      return { post };
+    } else {
+      return error({
+        statusCode: "404",
+        message: "お探しのページは見つかりませんでした",
+      });
+    }
   },
 };
 </script>

@@ -1,5 +1,5 @@
-export default async ({ store }) => {
-  if (!store.state.posts.length) {
+export default async ({ store, payload }) => {
+  if (!store.state.posts.length && !payload) {
     await store.dispatch("getPosts");
   }
 };
